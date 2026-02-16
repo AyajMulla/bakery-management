@@ -1,11 +1,20 @@
-## Rechart 
-npm install recharts
+# Bakery Management System – Frontend
 
-## React router
-npm install react-router-dom
+React-based bakery inventory and sales management system.
 
-## 🚀 1️⃣ Install Icons (Lucide)
-npm nstall Icons (Lucide)
+## Features
+- Owner login
+- Product management
+- Sales & profit tracking
+- Mobile responsive UI
 
-## toast
-npm install react-hot-toast
+## Tech Stack
+- React
+- Vite
+- Axios
+- CSS
+
+## Setup
+```bash
+npm install
+npm run dev
