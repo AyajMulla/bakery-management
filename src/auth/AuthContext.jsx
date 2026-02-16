@@ -1,88 +1,36 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
+import api from "../api/api";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
 
-  const DEFAULT_PASSWORD = "Ayaj@123";
-  const REGISTERED_MOBILE = "9359405574"; // 👈 OWNER MOBILE
+  const login = async (mobile, password) => {
+    try {
+      const res = await api.post("/auth/login", {
+        mobile,
+        password
+      });
 
-  useEffect(() => {
-    if (!localStorage.getItem("ownerPassword")) {
-      localStorage.setItem("ownerPassword", DEFAULT_PASSWORD);
-    }
-
-    if (!localStorage.getItem("ownerMobile")) {
-      localStorage.setItem("ownerMobile", REGISTERED_MOBILE);
-    }
-
-    if (localStorage.getItem("isAuthenticated") === "true") {
+      localStorage.setItem("token", res.data.token);
       setIsAuthenticated(true);
-    }
-  }, []);
 
-  const login = (username, password) => {
-    const savedPassword = localStorage.getItem("ownerPassword");
-
-    if (username === "Ayaj" && password === savedPassword) {
-      localStorage.setItem("isAuthenticated", "true");
-      setIsAuthenticated(true);
       return true;
+    } catch (error) {
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
-    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
-  };
-
-  /* =========================
-     OTP PASSWORD RESET
-  ========================= */
-
-  const sendOTP = (mobile) => {
-    const savedMobile = localStorage.getItem("ownerMobile");
-
-    if (mobile !== savedMobile) {
-      return { success: false, message: "Mobile number not registered" };
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    localStorage.setItem("resetOTP", otp.toString());
-
-    console.log("OTP (for demo):", otp); // 👈 simulate SMS
-
-    return { success: true };
-  };
-
-  const verifyOTPAndResetPassword = (otp, newPassword) => {
-    const savedOTP = localStorage.getItem("resetOTP");
-
-    if (otp !== savedOTP) {
-      return { success: false, message: "Invalid OTP" };
-    }
-
-    localStorage.setItem("ownerPassword", newPassword);
-    localStorage.removeItem("resetOTP");
-    localStorage.removeItem("isAuthenticated");
-
-    setIsAuthenticated(false);
-
-    return { success: true };
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        login,
-        logout,
-        sendOTP,
-        verifyOTPAndResetPassword
-      }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
