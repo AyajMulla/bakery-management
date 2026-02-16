@@ -1,0 +1,564 @@
+/* =====================
+   Root Variables & Theme
+===================== */
+:root {
+  /* Primary Colors */
+  --primary: #6d4c41;           /* warm wood brown */
+  --primary-light: #9c7d76;     /* lighter brown */
+  --primary-dark: #3e2723;      /* deep brown */
+  
+  /* Secondary Colors */
+  --secondary: #d7a178;         /* warm sand/beige */
+  --secondary-light: #e8bfa0;   /* light sand */
+  --accent: #c17d5e;            /* warm terracotta */
+  
+  /* Status Colors */
+  --success: #2a9d8f;           /* teal green */
+  --danger: #e63946;            /* refined red */
+  --warning: #f59e0b;           /* amber */
+  
+  /* Neutrals */
+  --bg: #faf8f6;                /* almost white */
+  --bg-secondary: #f3ede8;      /* light tan */
+  --card-bg: #ffffff;           /* pure white */
+  --text-dark: #2c2c2c;         /* dark gray */
+  --text-light: #6b6b6b;        /* medium gray */
+  --border: #e0d4c8;            /* subtle border */
+  --border-light: #ede7e0;      /* lighter border */
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.12);
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =====================
+   Base Styles
+===================== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: var(--bg);
+  color: var(--text-dark);
+  min-height: 100vh;
+  font-weight: 500;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--primary-dark);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+h1 {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: fadeInDown 600ms var(--transition-base) 100ms backwards;
+}
+
+h2 { font-size: 1.8rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--primary); }
+p { margin: 0; color: var(--text-light); line-height: 1.6; }
+
+/* =====================
+   Animations
+===================== */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+/* =====================
+   Layout & Containers
+===================== */
+#root {
+  width: 100%;
+  max-width: 1350px;
+  margin: 0 auto;
+}
+
+.container {
+  display: grid;
+  gap: 24px;
+  padding: 24px 20px;
+}
+
+/* =====================
+   Navbar Styles
+===================== */
+.navbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: var(--bg);
+  backdrop-filter: blur(8px);
+  animation: fadeInDown 400ms var(--transition-base);
+}
+
+.navbar {
+  width: 100%;
+  background: var(--card-bg);
+  padding: 24px 40px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-md);
+  border-bottom: 1px solid var(--border-light);
+  border-radius: 16px;
+  transition: box-shadow var(--transition-base);
+}
+
+.navbar:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.logo span { color: var(--primary); }
+.logo:hover { transform: translateY(-2px); opacity: 0.9; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-light);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+  font-size: 0.95rem;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--primary-dark);
+  background: var(--bg-secondary);
+  transform: translateY(-2px);
+}
+
+.hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--primary);
+}
+
+/* =====================
+   Card Component
+===================== */
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-base);
+  animation: fadeInUp 500ms var(--transition-base) backwards;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--secondary);
+  transform: translateY(-4px);
+}
+
+/* =====================
+   Form Styles
+===================== */
+form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+input, textarea, select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text-dark);
+  background-color: var(--card-bg);
+  transition: all var(--transition-fast);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(109, 76, 65, 0.1);
+}
+
+/* =====================
+   Buttons
+===================== */
+button {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+button.primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(109, 76, 65, 0.3);
+}
+
+button.secondary { background: var(--secondary); color: #fff; }
+button.success { background: var(--success); color: #fff; }
+button.danger { background: var(--danger); color: #fff; }
+
+button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-light);
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+
+.logout-btn:hover {
+  background: rgba(230, 57, 70, 0.08);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* =====================
+   Dashboard & Stats
+===================== */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.stat {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scaleX(0);
+  transition: transform var(--transition-base);
+}
+
+.stat:hover::before { transform: scaleX(1); }
+
+.stat span {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  margin-top: 8px;
+}
+
+/* =====================
+   Table Styles
+===================== */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background: white;
+}
+
+th {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: #fff;
+  padding: 14px 16px;
+  text-align: left;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+tbody tr:hover { background-color: var(--bg-secondary); }
+
+/* Status Badges */
+.low-stock-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--danger);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* =====================
+   Mobile Responsiveness
+===================== */
+@media (max-width: 768px) {
+  .hamburger { display: block; }
+  
+  .navbar { padding: 12px 20px; }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--card-bg);
+    flex-direction: column;
+    padding: 16px;
+    box-shadow: var(--shadow-lg);
+    display: none; /* Toggle this via JS class 'open' */
+    border-radius: 0 0 14px 14px;
+  }
+
+  .nav-links.open { display: flex; }
+
+  .dashboard { grid-template-columns: repeat(2, 1fr); }
+  
+  h1 { font-size: 1.6rem; }
+}
+
+@media (max-width: 480px) {
+  .dashboard { grid-template-columns: 1fr; }
+  form { grid-template-columns: 1fr; }
+  .navbar { flex-direction: row; justify-content: space-between; }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*LoginPage design*/
+ .login-page-wrapper {
+          min-height: 90vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          perspective: 1000px;
+        }
+
+        .login-card {
+          background: var(--card-bg);
+          width: 100%;
+          max-width: 420px;
+          padding: 50px 40px;
+          border-radius: 24px;
+          box-shadow: var(--shadow-xl);
+          border: 1px solid var(--border-light);
+          text-align: center;
+          animation: cardEntrance 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        }
+
+        /* 1. Card Entrance Animation */
+        @keyframes cardEntrance {
+          from { 
+            opacity: 0; 
+            transform: translateY(30px) rotateX(-10deg); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0) rotateX(0); 
+          }
+        }
+
+        /* 2. Floating Icon with Pulse */
+        .login-icon-box {
+          width: 80px;
+          height: 80px;
+          background: var(--primary);
+          border-radius: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 25px;
+          position: relative;
+          box-shadow: 0 10px 20px rgba(109, 76, 65, 0.3);
+          animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+
+        .pulse-ring {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border-radius: 22px;
+          border: 2px solid var(--primary);
+          animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+          0% { transform: scale(1); opacity: 0.5; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* 3. Staggered Slide-in Animations */
+        .slide-in-1 { animation: slideUp 0.6s ease-out 0.2s backwards; }
+        .slide-in-2 { animation: slideUp 0.6s ease-out 0.3s backwards; }
+        .slide-in-3 { animation: slideUp 0.6s ease-out 0.4s backwards; }
+        .slide-in-4 { animation: slideUp 0.6s ease-out 0.5s backwards; }
+
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 4. Interactive Input Styles */
+        .input-group {
+          position: relative;
+          margin-bottom: 20px;
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--text-light);
+          transition: color 0.3s;
+        }
+
+        .input-group input {
+          width: 100%;
+          height: 52px;
+          padding: 0 15px 0 45px;
+          border-radius: 14px;
+          border: 1.5px solid var(--border);
+          background: var(--bg);
+          font-family: inherit;
+          transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+          outline: none;
+          border-color: var(--primary);
+          background: white;
+          box-shadow: 0 0 0 4px rgba(109, 76, 65, 0.1);
+        }
+
+        .input-group input:focus + .input-icon {
+          color: var(--primary);
+        }
+
+        /* 5. Submit Button Animation */
+        .login-submit {
+          width: 100%;
+          height: 52px;
+          margin-top: 10px;
+          border-radius: 14px;
+          font-size: 1rem;
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          overflow: hidden;
+          transition: all 0.3s;
+        }
+
+        .login-submit:hover {
+          letter-spacing: 0.5px;
+          box-shadow: 0 8px 25px rgba(109, 76, 65, 0.4);
+        }
+
+        .login-footer a {
+          color: var(--accent);
+          text-decoration: none;
+          font-weight: 700;
+          font-size: 0.9rem;
+          transition: opacity 0.3s;
+        }
+
+        .login-footer a:hover {
+          opacity: 0.7;
+        }
