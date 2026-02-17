@@ -4,103 +4,74 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 export default function ForgotPasswordPage() {
-
   const { sendOTP, verifyOTPAndResetPassword } = useAuth();
   const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
-  const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPass, setNewPass] = useState("");
 
-  /* =========================
-     SEND OTP
-  ========================= */
   const handleSendOTP = async (e) => {
     e.preventDefault();
-
-    if (!mobile.trim()) {
-      toast.error("Enter mobile number");
-      return;
+    try {
+      await sendOTP(email);
+      toast.success("OTP sent to email");
+      setStep(2);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "OTP send failed");
     }
-
-    const res = await sendOTP(mobile);
-
-    if (!res.success) {
-      toast.error(res.message);
-      return;
-    }
-
-    toast.success("OTP sent (check backend console)");
-    setStep(2);
   };
 
-  /* =========================
-     RESET PASSWORD
-  ========================= */
-  const handleResetPassword = async (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
-
-    if (newPass.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
+    try {
+      await verifyOTPAndResetPassword({
+        email,
+        otp,
+        newPassword: newPass
+      });
+      toast.success("Password reset successful");
+      navigate("/login");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Invalid OTP");
     }
-
-    const res = await verifyOTPAndResetPassword(
-      mobile,
-      otp,
-      newPass
-    );
-
-    if (!res.success) {
-      toast.error(res.message);
-      return;
-    }
-
-    toast.success("Password reset successful");
-    navigate("/login");
   };
 
   return (
-    <div className="container">
-      <div className="card" style={{ maxWidth: 400, margin: "auto" }}>
-        <h2>Reset Password</h2>
+    <div className="card" style={{ maxWidth: 400, margin: "auto" }}>
+      <h2>Reset Password</h2>
 
-        {step === 1 && (
-          <form onSubmit={handleSendOTP}>
-            <input
-              placeholder="Registered Mobile Number"
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
-              required
-            />
-            <button className="primary">Send OTP</button>
-          </form>
-        )}
+      {step === 1 && (
+        <form onSubmit={handleSendOTP}>
+          <input
+            placeholder="Registered Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <button className="primary">Send OTP</button>
+        </form>
+      )}
 
-        {step === 2 && (
-          <form onSubmit={handleResetPassword}>
-            <input
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-
-            <input
-              type="password"
-              placeholder="New Password"
-              value={newPass}
-              onChange={(e) => setNewPass(e.target.value)}
-              required
-            />
-
-            <button className="primary">
-              Reset Password
-            </button>
-          </form>
-        )}
-      </div>
+      {step === 2 && (
+        <form onSubmit={handleReset}>
+          <input
+            placeholder="OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="New Password"
+            value={newPass}
+            onChange={(e) => setNewPass(e.target.value)}
+            required
+          />
+          <button className="primary">Reset Password</button>
+        </form>
+      )}
     </div>
   );
 }

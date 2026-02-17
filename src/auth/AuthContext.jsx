@@ -4,68 +4,48 @@ import api from "../api/api";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!localStorage.getItem("token")
   );
 
-  /* =========================
-     LOGIN
-  ========================= */
+  // LOGIN
   const login = async (mobile, password) => {
     try {
       const res = await api.post("/auth/login", {
-        mobile: mobile.trim(),
+        mobile,
         password
       });
 
       localStorage.setItem("token", res.data.token);
       setIsAuthenticated(true);
-
       return true;
-    } catch (error) {
+    } catch (err) {
       return false;
     }
   };
 
-  /* =========================
-     SEND OTP
-  ========================= */
-  const sendOTP = async (mobile) => {
-    try {
-      const res = await api.post("/otp/send", {
-        mobile: mobile.trim()
-      });
-
-      return { success: true };
-
-    } catch (err) {
-      return {
-        success: false,
-        message: err.response?.data?.message || "OTP send failed"
-      };
+  // SEND OTP (EMAIL)
+  const sendOTP = async (email) => {
+    if (!email) {
+      throw new Error("Email required");
     }
+
+    const res = await api.post("/otp/send", {
+      email: email.trim()
+    });
+
+    return res.data;
   };
 
-  /* =========================
-     VERIFY OTP
-  ========================= */
-  const verifyOTPAndResetPassword = async (mobile, otp, newPassword) => {
-    try {
-      await api.post("/otp/verify", {
-        mobile: mobile.trim(),
-        otp,
-        newPassword
-      });
+  // VERIFY OTP + RESET PASSWORD
+  const verifyOTPAndResetPassword = async ({ email, otp, newPassword }) => {
+    const res = await api.post("/otp/verify", {
+      email: email.trim(),
+      otp,
+      newPassword
+    });
 
-      return { success: true };
-
-    } catch (err) {
-      return {
-        success: false,
-        message: err.response?.data?.message || "Reset failed"
-      };
-    }
+    return res.data;
   };
 
   const logout = () => {
