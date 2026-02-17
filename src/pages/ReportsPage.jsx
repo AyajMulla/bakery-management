@@ -10,6 +10,7 @@ export default function ReportsPage({
 }) {
   return (
     <>
+    <br></br>
       <DateRangeFilter
         fromDate={fromDate}
         toDate={toDate}
