@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../auth/AuthContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
 
 export default function ForgotPasswordPage() {
   const { sendOTP, verifyOTPAndResetPassword } = useAuth();
@@ -11,15 +11,28 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPass, setNewPass] = useState("");
+  const [timer, setTimer] = useState(0);
+
+  /* =========================
+     OTP TIMER
+  ========================= */
+  useEffect(() => {
+    if (timer === 0) return;
+    const interval = setInterval(() => {
+      setTimer((t) => t - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
     try {
       await sendOTP(email);
-      toast.success("OTP sent to email");
+      toast.success("OTP sent to your email");
       setStep(2);
+      setTimer(60); // ⏳ 60 seconds lock
     } catch (err) {
-      toast.error(err.response?.data?.message || "OTP send failed");
+      toast.error(err.message || "Failed to send OTP");
     }
   };
 
@@ -34,12 +47,12 @@ export default function ForgotPasswordPage() {
       toast.success("Password reset successful");
       navigate("/login");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Invalid OTP");
+      toast.error(err.message || "Invalid OTP");
     }
   };
 
   return (
-    <div className="card" style={{ maxWidth: 400, margin: "auto" }}>
+    <div className="card" style={{ maxWidth: 420, margin: "auto" }}>
       <h2>Reset Password</h2>
 
       {step === 1 && (
@@ -50,18 +63,21 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <button className="primary">Send OTP</button>
+          <button className="primary" disabled={timer > 0}>
+            {timer > 0 ? `Resend OTP in ${timer}s` : "Send OTP"}
+          </button>
         </form>
       )}
 
       {step === 2 && (
         <form onSubmit={handleReset}>
           <input
-            placeholder="OTP"
+            placeholder="Enter OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             required
           />
+
           <input
             type="password"
             placeholder="New Password"
@@ -69,7 +85,17 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setNewPass(e.target.value)}
             required
           />
+
           <button className="primary">Reset Password</button>
+
+          <button
+            type="button"
+            disabled={timer > 0}
+            onClick={handleSendOTP}
+            style={{ marginTop: 10 }}
+          >
+            {timer > 0 ? `Resend OTP in ${timer}s` : "Resend OTP"}
+          </button>
         </form>
       )}
     </div>
