@@ -16,13 +16,13 @@ export default function LoginPage() {
 
     const success = await login(mobile, password);
 
-    if (success) {
-      toast.success("Welcome back, Owner 👋");
-      navigate("/");
-    } else {
-      toast.error("Invalid credentials");
-    }
-  };
+if (success) {
+  toast.success("Welcome back owner👋");
+  navigate("/");
+} else {
+  toast.error("Invalid credentials");
+}
+  };  
 
   return (
     <div className="login-page-wrapper">
