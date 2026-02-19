@@ -70,7 +70,7 @@ if (success) {
           </button>
 
           <div className="login-footer slide-in-4">
-            <a href="/forgot-password">Trouble logging in?</a>
+            <a href="/forgot-password">Forgot Password?</a>
           </div>
         </form>
       </div>
