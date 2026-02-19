@@ -37,7 +37,7 @@ if (success) {
           <h2>Owner Login</h2>
           <p>Taj Enterprises Management Portal</p>
         </div>
-
+<hr className="login-divider" />
         <form onSubmit={handleSubmit} className="login-form">
           {/* MOBILE INPUT - SLIDE IN 1 */}
           <div className="input-group slide-in-1">
