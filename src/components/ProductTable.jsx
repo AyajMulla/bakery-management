@@ -20,6 +20,10 @@ export default function ProductTable({
   onUpdate,
   onDelete
 }) {
+  // ✅ SAFETY FIX (DO NOT REMOVE)
+  const safeProducts = Array.isArray(products) ? products : [];
+  const safeSales = Array.isArray(sales) ? sales : [];
+
   const [editId, setEditId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,7 +45,7 @@ export default function ProductTable({
     setEditId(null);
   };
 
-  const filteredProducts = products.filter(p => 
+  const filteredProducts = safeProducts.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -58,9 +62,17 @@ export default function ProductTable({
   };
 
   const getProductMetrics = (productId) => {
-    const productSales = sales.filter((s) => String(s.productId) === String(productId));
-    const revenue = productSales.reduce((sum, s) => sum + Number(s.total || 0), 0);
-    const profit = productSales.reduce((sum, s) => sum + Number(s.profit || 0), 0);
+    const productSales = safeSales.filter(
+      (s) => String(s.productId) === String(productId)
+    );
+    const revenue = productSales.reduce(
+      (sum, s) => sum + Number(s.total || 0),
+      0
+    );
+    const profit = productSales.reduce(
+      (sum, s) => sum + Number(s.profit || 0),
+      0
+    );
     return { revenue, profit };
   };
 
@@ -84,13 +96,17 @@ export default function ProductTable({
           />
         </div>
         
-        <span className="badge-count">{products.length} Products</span>
+        <span className="badge-count">{safeProducts.length} Products</span>
       </div>
 
       {filteredProducts.length === 0 ? (
         <div style={{ padding: "60px", textAlign: "center", color: "var(--text-light)" }}>
           <Package size={48} style={{ opacity: 0.2, marginBottom: '10px' }} />
-          <p>{searchTerm ? "No products match your search." : "No products available in the inventory."}</p>
+          <p>
+            {searchTerm
+              ? "No products match your search."
+              : "No products available in the inventory."}
+          </p>
         </div>
       ) : (
         <div className="table-wrapper">
@@ -118,7 +134,9 @@ export default function ProductTable({
                         <input
                           className="table-input"
                           value={editForm.name}
-                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, name: e.target.value })
+                          }
                         />
                       ) : (
                         <div>
@@ -130,19 +148,41 @@ export default function ProductTable({
 
                     <td data-label="Capacity">
                       {isEditing ? (
-                        <input type="number" className="table-input" value={editForm.capacity} onChange={(e) => setEditForm({ ...editForm, capacity: e.target.value })} />
-                      ) : formatCapacity(p)}
+                        <input
+                          type="number"
+                          className="table-input"
+                          value={editForm.capacity}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, capacity: e.target.value })
+                          }
+                        />
+                      ) : (
+                        formatCapacity(p)
+                      )}
                     </td>
 
                     <td data-label="Stock & Sales">
                       {isEditing ? (
-                        <input type="number" className="table-input" value={editForm.quantity} onChange={(e) => setEditForm({ ...editForm, quantity: e.target.value })} />
+                        <input
+                          type="number"
+                          className="table-input"
+                          value={editForm.quantity}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, quantity: e.target.value })
+                          }
+                        />
                       ) : (
                         <div>
-                          <span className={isLowStock ? "stock-critical" : "stock-healthy"}>
+                          <span
+                            className={
+                              isLowStock ? "stock-critical" : "stock-healthy"
+                            }
+                          >
                             {p.quantity} Units
                           </span>
-                          <div className="sold-subtext">{p.soldQty || 0} Sold</div>
+                          <div className="sold-subtext">
+                            {p.soldQty || 0} Sold
+                          </div>
                         </div>
                       )}
                     </td>
@@ -150,21 +190,53 @@ export default function ProductTable({
                     <td data-label="Financials">
                       {isEditing ? (
                         <div style={{ display: 'flex', gap: '4px' }}>
-                          <input type="number" className="table-input sm" value={editForm.buyingPrice} onChange={(e) => setEditForm({ ...editForm, buyingPrice: e.target.value })} />
-                          <input type="number" className="table-input sm" value={editForm.sellingPrice} onChange={(e) => setEditForm({ ...editForm, sellingPrice: e.target.value })} />
+                          <input
+                            type="number"
+                            className="table-input sm"
+                            value={editForm.buyingPrice}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                buyingPrice: e.target.value
+                              })
+                            }
+                          />
+                          <input
+                            type="number"
+                            className="table-input sm"
+                            value={editForm.sellingPrice}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                sellingPrice: e.target.value
+                              })
+                            }
+                          />
                         </div>
                       ) : (
                         <div className="price-group">
-                          <div>Buy: <span>₹{p.buyingPrice}</span></div>
-                          <div className="sell-price">Sell: <span>₹{p.sellingPrice}</span></div>
+                          <div>
+                            Buy: <span>₹{p.buyingPrice}</span>
+                          </div>
+                          <div className="sell-price">
+                            Sell: <span>₹{p.sellingPrice}</span>
+                          </div>
                         </div>
                       )}
                     </td>
 
                     <td data-label="Analytics">
                       <div className="rev-text">Rev: ₹{revenue}</div>
-                      <div className={`profit-text ${profit < 0 ? 'neg' : 'pos'}`}>
-                        {profit < 0 ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
+                      <div
+                        className={`profit-text ${
+                          profit < 0 ? "neg" : "pos"
+                        }`}
+                      >
+                        {profit < 0 ? (
+                          <TrendingDown size={14} />
+                        ) : (
+                          <TrendingUp size={14} />
+                        )}
                         ₹{profit}
                       </div>
                     </td>
@@ -173,8 +245,18 @@ export default function ProductTable({
                       <div className="action-stack">
                         {isEditing ? (
                           <div className="edit-btn-group">
-                            <button className="success icon-btn" onClick={saveEdit}><Save size={18} /></button>
-                            <button className="danger icon-btn" onClick={() => setEditId(null)}><XCircle size={18} /></button>
+                            <button
+                              className="success icon-btn"
+                              onClick={saveEdit}
+                            >
+                              <Save size={18} />
+                            </button>
+                            <button
+                              className="danger icon-btn"
+                              onClick={() => setEditId(null)}
+                            >
+                              <XCircle size={18} />
+                            </button>
                           </div>
                         ) : (
                           <>
@@ -182,10 +264,18 @@ export default function ProductTable({
                               <SellProduct product={p} onSell={onSell} />
                             </div>
                             <div className="manage-action-row">
-                              <button className="primary manage-btn" onClick={() => startEdit(p)} title="Edit">
+                              <button
+                                className="primary manage-btn"
+                                onClick={() => startEdit(p)}
+                                title="Edit"
+                              >
                                 <Edit3 size={16} />
                               </button>
-                              <button className="danger manage-btn" onClick={() => onDelete(p._id)} title="Delete">
+                              <button
+                                className="danger manage-btn"
+                                onClick={() => onDelete(p._id)}
+                                title="Delete"
+                              >
                                 <Trash2 size={16} />
                               </button>
                             </div>
@@ -201,7 +291,7 @@ export default function ProductTable({
         </div>
       )}
 
-      <style>{`
+  <style>{`
         .table-header {
           padding: 20px 24px;
           background: var(--bg-secondary);
@@ -340,6 +430,7 @@ export default function ProductTable({
           .sell-action-row { justify-content: center; }
         }
       `}</style>
+
     </div>
   );
 }

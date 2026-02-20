@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
     !!localStorage.getItem("token")
   );
 
-  // LOGIN
+  // 🔐 LOGIN
   const login = async (mobile, password) => {
     try {
       const res = await api.post("/auth/login", {
@@ -18,29 +18,36 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("token", res.data.token);
       setIsAuthenticated(true);
-      return true;
+      return { success: true };
     } catch (err) {
-      return false;
+      return {
+        success: false,
+        message: err.response?.data?.msg || "Login failed"
+      };
     }
   };
 
-  // SEND OTP (EMAIL)
-  const sendOTP = async (email) => {
-    if (!email) {
-      throw new Error("Email required");
+  // 📩 SEND OTP (BY MOBILE)
+  const sendOTP = async (mobile) => {
+    if (!mobile) {
+      throw new Error("Mobile number required");
     }
 
-    const res = await api.post("/otp/send", {
-      email: email.trim()
+    const res = await api.post("/auth/forgot-password", {
+      mobile: mobile.trim()
     });
 
     return res.data;
   };
 
-  // VERIFY OTP + RESET PASSWORD
-  const verifyOTPAndResetPassword = async ({ email, otp, newPassword }) => {
-    const res = await api.post("/otp/verify", {
-      email: email.trim(),
+  // 🔁 VERIFY OTP + RESET PASSWORD
+  const verifyOTPAndResetPassword = async ({
+    mobile,
+    otp,
+    newPassword
+  }) => {
+    const res = await api.post("/auth/reset-password", {
+      mobile: mobile.trim(),
       otp,
       newPassword
     });
@@ -48,6 +55,7 @@ export const AuthProvider = ({ children }) => {
     return res.data;
   };
 
+  // 🚪 LOGOUT
   const logout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);

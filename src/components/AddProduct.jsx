@@ -95,10 +95,20 @@ export default function AddProduct({ onAdd }) {
             required
           >
             <option value="">Select Capacity</option>
+            <option value="100 ml">100 ml</option>
+            <option value="200 ml">200 ml</option>
             <option value="250 ml">250 ml</option>
+            <option value="300 ml">300 ml</option>
             <option value="500 ml">500 ml</option>
+            <option value="600 ml">600 ml</option>
+            <option value="750 ml">750 ml</option>
             <option value="1000 ml">1000 ml</option>
+            <option value="1500 ml">1500 ml</option>
+            <option value="1750 ml">1750 ml</option>
             <option value="2000 ml">2000 ml</option>
+            <option value="2250 ml">2250 ml</option>
+            <option value="2500 ml">2500 ml</option>
+            
           </select>
         )}
 

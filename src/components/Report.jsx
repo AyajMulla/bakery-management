@@ -5,7 +5,7 @@ import {
   ChevronLeft, 
   ChevronRight, 
   TrendingUp, 
-  IndianRupee, // Replaced DollarSign
+  IndianRupee,
   FileText 
 } from "lucide-react";
 
@@ -18,6 +18,9 @@ export default function Report({
   setFromDate,
   setToDate
 }) {
+  // ✅ SAFETY FIX (DO NOT REMOVE)
+  const safeSales = Array.isArray(sales) ? sales : [];
+
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -25,7 +28,7 @@ export default function Report({
       FILTER + SEARCH + SORT
   ========================= */
   const filteredSales = useMemo(() => {
-    return sales
+    return safeSales
       .filter((sale) => {
         if (!sale) return false;
 
@@ -44,7 +47,7 @@ export default function Report({
         return true;
       })
       .sort((a, b) => new Date(b.date) - new Date(a.date));
-  }, [sales, fromDate, toDate, search]);
+  }, [safeSales, fromDate, toDate, search]);
 
   /* =========================
       PAGINATION LOGIC
@@ -60,7 +63,7 @@ export default function Report({
   }, [totalPages, page]);
 
   /* =========================
-      TOTALS (Formatted for India)
+      TOTALS
   ========================= */
   const totalRevenue = useMemo(
     () => filteredSales.reduce((sum, s) => sum + Number(s.total || 0), 0),
@@ -75,8 +78,12 @@ export default function Report({
   return (
     <div className="container" style={{ animation: "fadeIn 0.6s ease-out" }}>
       <header style={{ marginBottom: "2rem" }}>
-        <h2 style={{ textAlign: "left", marginBottom: "0.5rem" }}>Sales Analytics</h2>
-        <p style={{ color: "var(--text-light)" }}>Detailed performance report for Taj Enterprises.</p>
+        <h2 style={{ textAlign: "left", marginBottom: "0.5rem" }}>
+          Sales Analytics
+        </h2>
+        <p style={{ color: "var(--text-light)" }}>
+          Detailed performance report for Taj Enterprises.
+        </p>
       </header>
 
       {/* 📊 SUMMARY KPI CARDS */}
@@ -87,7 +94,9 @@ export default function Report({
             <FileText size={18} />
           </div>
           <span>{filteredSales.length}</span>
-          <p style={{ fontSize: '0.75rem', marginTop: '8px', color: 'var(--text-light)' }}>Successful transactions</p>
+          <p style={{ fontSize: "0.75rem", marginTop: "8px", color: "var(--text-light)" }}>
+            Successful transactions
+          </p>
         </div>
 
         <div className="stat">
@@ -95,20 +104,35 @@ export default function Report({
             <h3>Period Revenue</h3>
             <IndianRupee size={18} color="var(--primary)" />
           </div>
-          {/* Indian Number Formatting applied here */}
-          <span>₹{totalRevenue.toLocaleString('en-IN')}</span>
-          <p style={{ fontSize: '0.75rem', marginTop: '8px', color: 'var(--text-light)' }}>Gross sales amount</p>
+          <span>₹{totalRevenue.toLocaleString("en-IN")}</span>
+          <p style={{ fontSize: "0.75rem", marginTop: "8px", color: "var(--text-light)" }}>
+            Gross sales amount
+          </p>
         </div>
 
-        <div className="stat" style={{ borderLeft: `4px solid ${totalProfit >= 0 ? "var(--success)" : "var(--danger)"}` }}>
+        <div
+          className="stat"
+          style={{
+            borderLeft: `4px solid ${
+              totalProfit >= 0 ? "var(--success)" : "var(--danger)"
+            }`
+          }}
+        >
           <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-light)" }}>
             <h3>Net Profit</h3>
-            <IndianRupee size={18} color={totalProfit >= 0 ? "var(--success)" : "var(--danger)"} />
+            <IndianRupee
+              size={18}
+              color={totalProfit >= 0 ? "var(--success)" : "var(--danger)"}
+            />
           </div>
-          <span style={{ color: totalProfit >= 0 ? "var(--success)" : "var(--danger)" }}>
-            ₹{totalProfit.toLocaleString('en-IN')}
+          <span
+            style={{
+              color: totalProfit >= 0 ? "var(--success)" : "var(--danger)"
+            }}
+          >
+            ₹{totalProfit.toLocaleString("en-IN")}
           </span>
-          <p style={{ fontSize: '0.75rem', marginTop: '8px', color: 'var(--text-light)' }}>
+          <p style={{ fontSize: "0.75rem", marginTop: "8px", color: "var(--text-light)" }}>
             {totalProfit >= 0 ? "Profit realized" : "Loss incurred"}
           </p>
         </div>
@@ -124,7 +148,10 @@ export default function Report({
               className="search-input"
               placeholder="Filter by product name..."
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
 
@@ -136,7 +163,10 @@ export default function Report({
                 className="table-input"
                 style={{ paddingLeft: "30px", fontSize: "0.85rem" }}
                 value={fromDate}
-                onChange={(e) => { setFromDate(e.target.value); setPage(1); }}
+                onChange={(e) => {
+                  setFromDate(e.target.value);
+                  setPage(1);
+                }}
               />
             </div>
             <div style={{ position: "relative", flex: "1" }}>
@@ -146,7 +176,10 @@ export default function Report({
                 className="table-input"
                 style={{ paddingLeft: "30px", fontSize: "0.85rem" }}
                 value={toDate}
-                onChange={(e) => { setToDate(e.target.value); setPage(1); }}
+                onChange={(e) => {
+                  setToDate(e.target.value);
+                  setPage(1);
+                }}
               />
             </div>
           </div>
@@ -175,18 +208,23 @@ export default function Report({
                 paginatedSales.map((s) => (
                   <tr key={s._id || s.saleId}>
                     <td data-label="Date" style={{ color: "var(--text-light)", fontSize: "0.85rem" }}>
-                      {new Date(s.date).toLocaleDateString('en-IN', { dateStyle: 'medium' })}
+                      {new Date(s.date).toLocaleDateString("en-IN", { dateStyle: "medium" })}
                     </td>
                     <td data-label="Product" style={{ fontWeight: "700", color: "var(--primary-dark)" }}>
                       {s.productName}
                     </td>
                     <td data-label="Quantity">{s.quantity}</td>
-                    <td data-label="Revenue" style={{ fontWeight: "600" }}>₹{s.total.toLocaleString('en-IN')}</td>
-                    <td data-label="Profit" style={{ 
-                        fontWeight: "800", 
-                        color: s.profit >= 0 ? "var(--success)" : "var(--danger)" 
-                      }}>
-                      ₹{s.profit.toLocaleString('en-IN')}
+                    <td data-label="Revenue" style={{ fontWeight: "600" }}>
+                      ₹{s.total.toLocaleString("en-IN")}
+                    </td>
+                    <td
+                      data-label="Profit"
+                      style={{
+                        fontWeight: "800",
+                        color: s.profit >= 0 ? "var(--success)" : "var(--danger)"
+                      }}
+                    >
+                      ₹{s.profit.toLocaleString("en-IN")}
                     </td>
                   </tr>
                 ))
@@ -197,32 +235,40 @@ export default function Report({
 
         {/* 📄 PAGINATION */}
         {filteredSales.length > 0 && (
-          <div style={{ 
-            display: "flex", 
-            justifyContent: "center", 
-            alignItems: "center", 
-            gap: "20px", 
-            padding: "20px",
-            background: "var(--bg-secondary)"
-          }}>
-            <button 
-              className="manage-btn" 
-              disabled={page === 1} 
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "20px",
+              padding: "20px",
+              background: "var(--bg-secondary)"
+            }}
+          >
+            <button
+              className="manage-btn"
+              disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              style={{ background: page === 1 ? "#ccc" : "var(--primary-dark)", cursor: page === 1 ? "not-allowed" : "pointer" }}
+              style={{
+                background: page === 1 ? "#ccc" : "var(--primary-dark)",
+                cursor: page === 1 ? "not-allowed" : "pointer"
+              }}
             >
               <ChevronLeft size={18} color="white" />
             </button>
-            
+
             <span style={{ fontWeight: "700", fontSize: "0.9rem" }}>
               Page <span style={{ color: "var(--accent)" }}>{page}</span> of {totalPages}
             </span>
 
-            <button 
-              className="manage-btn" 
-              disabled={page === totalPages} 
+            <button
+              className="manage-btn"
+              disabled={page === totalPages}
               onClick={() => setPage((p) => p + 1)}
-              style={{ background: page === totalPages ? "#ccc" : "var(--primary-dark)", cursor: page === totalPages ? "not-allowed" : "pointer" }}
+              style={{
+                background: page === totalPages ? "#ccc" : "var(--primary-dark)",
+                cursor: page === totalPages ? "not-allowed" : "pointer"
+              }}
             >
               <ChevronRight size={18} color="white" />
             </button>
