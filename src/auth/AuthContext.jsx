@@ -27,34 +27,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 📩 SEND OTP (BY MOBILE)
-  const sendOTP = async (mobile) => {
-    if (!mobile) {
-      throw new Error("Mobile number required");
-    }
+// 📩 SEND OTP (EMAIL)
+const sendOTP = async (email) => {
+  if (!email) {
+    throw new Error("Email required");
+  }
 
-    const res = await api.post("/auth/forgot-password", {
-      mobile: mobile.trim()
-    });
+  const res = await api.post("/otp/send", {
+    email: email.trim()
+  });
 
-    return res.data;
-  };
+  return res.data;
+};
 
-  // 🔁 VERIFY OTP + RESET PASSWORD
-  const verifyOTPAndResetPassword = async ({
-    mobile,
+// 🔁 VERIFY OTP + RESET PASSWORD
+const verifyOTPAndResetPassword = async ({
+  email,
+  otp,
+  newPassword
+}) => {
+  const res = await api.post("/otp/verify", {
+    email: email.trim(),
     otp,
     newPassword
-  }) => {
-    const res = await api.post("/auth/reset-password", {
-      mobile: mobile.trim(),
-      otp,
-      newPassword
-    });
+  });
 
-    return res.data;
-  };
-
+  return res.data;
+};
   // 🚪 LOGOUT
   const logout = () => {
     localStorage.removeItem("token");
