@@ -7,6 +7,12 @@ const api = axios.create({
   }
 });
 
+// const api = axios.create({
+//   baseURL: "https://bakery-backend-ptzj.onrender.com/api",
+//   headers: { "Content-Type": "application/json" }
+// });
+
+
 // Attach token automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

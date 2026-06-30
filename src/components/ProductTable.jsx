@@ -28,6 +28,22 @@ export default function ProductTable({
   const [editForm, setEditForm] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
+  const getExpiryStatus = (expiryDate) => {
+    if (!expiryDate) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const exp = new Date(expiryDate);
+    exp.setHours(0, 0, 0, 0);
+
+    const diffTime = exp.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return { label: "Expired ⚠️", class: "exp-expired" };
+    if (diffDays === 0) return { label: "Expires Today ⏰", class: "exp-warning" };
+    if (diffDays <= 3) return { label: `Expires in ${diffDays}d ⏰`, class: "exp-warning" };
+    return { label: `Exp: ${exp.toLocaleDateString()}`, class: "exp-normal" };
+  };
+
   const startEdit = (product) => {
     setEditId(product._id);
     setEditForm({ ...product });
@@ -39,7 +55,8 @@ export default function ProductTable({
       capacity: Number(editForm.capacity),
       quantity: Number(editForm.quantity),
       buyingPrice: Number(editForm.buyingPrice),
-      sellingPrice: Number(editForm.sellingPrice)
+      sellingPrice: Number(editForm.sellingPrice),
+      expiryDate: editForm.expiryDate || undefined
     });
     toast.success("Product updated successfully!");
     setEditId(null);
@@ -131,17 +148,37 @@ export default function ProductTable({
                   <tr key={p._id} className={isEditing ? "editing-row" : ""}>
                     <td data-label="Product Info">
                       {isEditing ? (
-                        <input
-                          className="table-input"
-                          value={editForm.name}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, name: e.target.value })
-                          }
-                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <input
+                            className="table-input"
+                            value={editForm.name}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, name: e.target.value })
+                            }
+                            placeholder="Name"
+                          />
+                          <input
+                            type="date"
+                            className="table-input sm"
+                            value={editForm.expiryDate ? editForm.expiryDate.split("T")[0] : ""}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, expiryDate: e.target.value })
+                            }
+                            title="Expiry Date"
+                          />
+                        </div>
                       ) : (
                         <div>
                           <div className="product-name-cell">{p.name}</div>
                           <div className="category-tag">{p.category}</div>
+                          {p.expiryDate && (() => {
+                            const status = getExpiryStatus(p.expiryDate);
+                            return status ? (
+                              <div className={`expiry-subtext ${status.class}`}>
+                                {status.label}
+                              </div>
+                            ) : null;
+                          })()}
                         </div>
                       )}
                     </td>
@@ -362,6 +399,30 @@ export default function ProductTable({
 
         .product-name-cell { font-weight: 700; color: var(--primary-dark); font-size: 1rem; }
         .category-tag { font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase; margin-top: 2px; }
+        .expiry-subtext {
+          font-size: 0.72rem;
+          margin-top: 4px;
+          font-weight: 700;
+          display: inline-block;
+          padding: 2px 6px;
+          border-radius: 4px;
+          border: 1px solid transparent;
+        }
+        .exp-expired {
+          background: #f8d7da;
+          color: #721c24;
+          border-color: #f5c6cb;
+        }
+        .exp-warning {
+          background: #fff3cd;
+          color: #856404;
+          border-color: #ffeeba;
+        }
+        .exp-normal {
+          color: var(--text-light);
+          font-weight: normal;
+          padding: 0;
+        }
 
         .stock-healthy { font-weight: 700; color: var(--primary); }
         .stock-critical { font-weight: 700; color: var(--danger); }

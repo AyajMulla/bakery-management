@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Package,
   FileText,
+  Trash2,
   LogOut,
   Menu,
   X
@@ -63,6 +64,10 @@ export default function Navbar() {
 
           <NavLink to="/reports" onClick={() => setOpen(false)}>
             <FileText size={18} /> Reports
+          </NavLink>
+
+          <NavLink to="/wastage" onClick={() => setOpen(false)}>
+            <Trash2 size={18} /> Wastage
           </NavLink>
 
           <button onClick={handleLogout} className="logout-btn">

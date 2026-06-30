@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import DashboardPage from "./pages/DashboardPage";
 import ProductsPage from "./pages/ProductsPage";
 import ReportsPage from "./pages/ReportsPage";
+import WastagePage from "./pages/WastagePage";
 
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -19,6 +20,7 @@ import "./index.css";
 export default function App() {
   const [products, setProducts] = useState([]);
   const [sales, setSales] = useState([]);
+  const [wastage, setWastage] = useState([]);
 
   // ✅ DATE FILTER STATE (THIS WAS MISSING)
   const [fromDate, setFromDate] = useState("");
@@ -32,9 +34,11 @@ export default function App() {
       try {
         const productsRes = await api.get("/products");
         const salesRes = await api.get("/sales");
+        const wastageRes = await api.get("/wastage");
 
         setProducts(productsRes.data);
         setSales(salesRes.data);
+        setWastage(wastageRes.data);
       } catch {
         toast.error("Failed to load data");
       }
@@ -121,6 +125,33 @@ export default function App() {
     }
   };
 
+  /* =========================
+     LOG WASTAGE
+  ========================= */
+  const handleLogWastage = async (productId, quantity, reason) => {
+    try {
+      const res = await api.post("/wastage", {
+        productId,
+        quantity,
+        reason
+      });
+
+      // Update product stock
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === productId ? res.data.product : p
+        )
+      );
+
+      // Append new wastage record
+      setWastage((prev) => [res.data.wastage, ...prev]);
+
+      toast.success("Wastage logged successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to log wastage");
+    }
+  };
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -188,7 +219,22 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
+          {/* ================= WASTAGE ================= */}
+          <Route
+            path="/wastage"
+            element={
+               <ProtectedRoute>
+                 <>
+                   <Navbar />
+                   <WastagePage
+                     products={products}
+                     wastage={wastage}
+                     onLogWastage={handleLogWastage}
+                   />
+                 </>
+               </ProtectedRoute>
+            }
+          />
 
         </Routes>
       </BrowserRouter>

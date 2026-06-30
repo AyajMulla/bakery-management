@@ -8,7 +8,8 @@ export default function AddProduct({ onAdd }) {
     capacity: "",
     quantity: "",
     buyingPrice: "",
-    sellingPrice: ""
+    sellingPrice: "",
+    expiryDate: ""
   });
 
   const handleChange = (e) => {
@@ -48,7 +49,8 @@ export default function AddProduct({ onAdd }) {
       quantity: Number(form.quantity),
       buyingPrice: Number(form.buyingPrice),
       sellingPrice: Number(form.sellingPrice),
-      soldQty: 0
+      soldQty: 0,
+      expiryDate: form.expiryDate || undefined
     });
 
     toast.success("Product added successfully!");
@@ -59,7 +61,8 @@ export default function AddProduct({ onAdd }) {
       capacity: "",
       quantity: "",
       buyingPrice: "",
-      sellingPrice: ""
+      sellingPrice: "",
+      expiryDate: ""
     });
   };
 
@@ -148,6 +151,17 @@ export default function AddProduct({ onAdd }) {
           onChange={handleChange}
           required
         />
+
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '4px', textAlign: 'left', margin: '0 0 10px' }}>
+          <label style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-light)', marginLeft: '4px' }}>Expiry Date (Optional)</label>
+          <input
+            type="date"
+            name="expiryDate"
+            value={form.expiryDate}
+            onChange={handleChange}
+            style={{ margin: 0, height: '40px' }}
+          />
+        </div>
 
         <button className="primary">Add Product</button>
       </form>
